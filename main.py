@@ -1,6 +1,7 @@
 import os
 import argparse
 import tfidf
+import numpy as np
 from textblob import TextBlob as tb
 from VectorSpace import VectorSpace
 
@@ -53,7 +54,8 @@ if __name__ == '__main__':
     print('-------------------------------------')
     print('Term Frequency Weighting + Cosine Similarity')
     sorted_ratings_1 = vectorSpace_tf.search(queryList)
-    result(dict(list(sorted_ratings_1.items())[:10]))
+    top_10_tf_cos = dict(list(sorted_ratings_1.items())[:10])
+    result(top_10_tf_cos)
 
     #1-2
     print('')
@@ -61,7 +63,9 @@ if __name__ == '__main__':
     print('-------------------------------------')
     print('Term Frequency Weighting + Euclidean Distance')
     sorted_ratings_2 = vectorSpace_tf.search(queryList, formula="euclidean")
-    result(dict(list(sorted_ratings_2.items())[:10]))
+    top_10_tf_dis = dict(list(sorted_ratings_2.items())[:10])
+    result(top_10_tf_dis)
+    print("top1cos:", list(sorted_ratings_1.items())[0])
 
     #1-3
     print('')
@@ -69,7 +73,8 @@ if __name__ == '__main__':
     print('-------------------------------------')
     print('TF-IDF Weighting + Cosine Similarity')
     sorted_ratings_3 = vectorSpace_tfidf.search(queryList, weighting="tfidf")
-    result(dict(list(sorted_ratings_3.items())[:10]))
+    top_10_tfidf_cos = dict(list(sorted_ratings_3.items())[:10])
+    result(top_10_tfidf_cos)
 
     #1-4
     print('')
@@ -77,4 +82,20 @@ if __name__ == '__main__':
     print('-------------------------------------')
     print('TF-IDF Weighting + Euclidean Distance')
     sorted_ratings_4 = vectorSpace_tfidf.search(queryList, formula="euclidean", weighting="tfidf")
-    result(dict(list(sorted_ratings_4.items())[:10]))
+    top_10_tfidf_dis = dict(list(sorted_ratings_4.items())[:10])
+    result(top_10_tfidf_dis)
+
+
+    #2
+    print('')
+    print('2')
+    print('-------------------------------------')
+    print('Relevence Feedback - TF-IDF + Cosine Similarity')
+    top_tfidf_cos_idx = list(sorted_ratings_3.items())[0][0]
+    top_doc = documents[top_tfidf_cos_idx]
+    feedbackVector = vectorSpace_tfidf.getRelevenceVector(top_doc)
+    queryVector = vectorSpace_tfidf.buildQueryVector(queryList, weighting="tfidf")
+    rf_query_vector = list(1 * np.array(queryVector) + 0.5 * np.array(feedbackVector))
+    sorted_ratings_5 = vectorSpace_tfidf.relevence_search(rf_query_vector, weighting='tfidf')
+    relevence_ratings = dict(list(sorted_ratings_5.items())[:10])
+    result(relevence_ratings)

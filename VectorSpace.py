@@ -3,6 +3,7 @@ from Parser import Parser
 from textblob import TextBlob as tb
 import util
 import tfidf
+import nltk
 
 class VectorSpace:
     """ A algebraic model for representing text documents as vectors of identifiers. 
@@ -71,7 +72,7 @@ class VectorSpace:
         ### tf weighting
         for word in wordList:
             if weighting == 'tf':
-                vector[self.vectorKeywordIndex[word]] += 1; #Use simple Term Count Model
+                vector[self.vectorKeywordIndex[word]] += 1 / len(wordList)  #Use simple Term Count Model
                 # vector[self.vectorKeywordIndex[word]] = tfidf.tf(word, blob)
             elif weighting == 'tfidf':
                 vector[self.vectorKeywordIndex[word]] = tfidf.tfidf(word, blob, self.blobList)
@@ -106,6 +107,33 @@ class VectorSpace:
             ratings[key] = rating
         ratings = {k: v for k, v in sorted(ratings.items(), key=lambda item: item[1], reverse=True)}
         return ratings
+
+    def relevence_search(self, searchVector, formula="cosine", weighting='tf'):
+        ratings = {}
+        for key, value in self.documentVectors.items():
+            if formula == "cosine":
+                rating = util.cosine(searchVector, value) 
+            elif formula == "euclidean":
+                rating = util.euclidean(searchVector, value)
+            ratings[key] = rating
+        ratings = {k: v for k, v in sorted(ratings.items(), key=lambda item: item[1], reverse=True)}
+        
+        return ratings
+
+
+    def getRelevenceVector(self, wordString):
+        wordList = self.parser.tokenise(wordString)
+        wordList = self.parser.removeStopWords(wordList)
+        pos_result = nltk.pos_tag(wordList)
+        feedbackWord = []
+        for word in pos_result:
+            if word[1] == 'VB' or 'NN':
+                feedbackWord.append(word[0])
+        weighting="tfidf"
+        feedbackVector = self.makeVector(" ".join(feedbackWord), weighting)
+
+        return feedbackVector
+
 
 
 if __name__ == '__main__':
