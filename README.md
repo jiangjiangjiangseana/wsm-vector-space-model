@@ -23,3 +23,18 @@ Notice :
 Example :
 
 `python main.py --query "Trump Biden Taiwan China"`
+
+Output : top 10 news ID with scores
+
+- Term Frequency Weighting + Cosine Similarity
+
+- Term Frequency Weighting + Euclidean Distance
+
+- TF-IDF Weighting + Cosine Similarity
+
+- TF-IDF Weighting + Euclidean Distance
+
+- Relevence Feedback - TF-IDF + Cosine Similarity
+
+The code runs for a long time on my computer.
+It's about 30 minutes :(
