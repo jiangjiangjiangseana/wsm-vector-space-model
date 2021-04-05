@@ -25,6 +25,7 @@ class VectorSpace:
         self.documentVectors={}
         self.parser = Parser()
         self.blobList = []
+        self.keyerror_count = 0
         if(len(documents)>0):
             self.build(documents, weighting)
 
@@ -69,14 +70,16 @@ class VectorSpace:
         wordList = self.parser.removeStopWords(wordList)        
         documentString = " ".join(wordList)
         blob = tb(documentString)
-        
         ### tf weighting
         for word in wordList:
-            if weighting == 'tf':
-                vector[self.vectorKeywordIndex[word]] += 1 / len(wordList)  #Use simple Term Count Model
-                # vector[self.vectorKeywordIndex[word]] = tfidf.tf(word, blob)
-            elif weighting == 'tfidf':
-                vector[self.vectorKeywordIndex[word]] = tfidf.tfidf(word, blob, self.blobList)
+            if word in self.vectorKeywordIndex.keys():
+                if weighting == 'tf':
+                    vector[self.vectorKeywordIndex[word]] += 1 / len(wordList)  #Use simple Term Count Model
+                    # vector[self.vectorKeywordIndex[word]] = tfidf.tf(word, blob)
+                elif weighting == 'tfidf':
+                    vector[self.vectorKeywordIndex[word]] = tfidf.tfidf(word, blob, self.blobList)
+            else:
+                self.keyerror_count+=1
         return vector
 
 
@@ -118,7 +121,7 @@ class VectorSpace:
                 rating = util.euclidean(searchVector, value)
             ratings[key] = rating
         ratings = {k: v for k, v in sorted(ratings.items(), key=lambda item: item[1], reverse=True)}
-        
+        print("key error count relevence search:", self.keyerror_count)
         return ratings
 
 

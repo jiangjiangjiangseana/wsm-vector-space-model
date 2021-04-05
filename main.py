@@ -67,8 +67,10 @@ if __name__ == '__main__':
     top_10_tf_dis = dict(list(sorted_ratings_2.items())[:10])
     result(top_10_tf_dis)
 
-
+    del engNewsList, vectorSpace_tf
+    gc.collect()
    
+    print("\n\nplease wait ! :(\n\n")
     vectorSpace_tfidf = VectorSpace(documents, weighting='tfidf')
 
     #1-3

@@ -37,4 +37,4 @@ Output : top 10 news ID with scores
 - Relevence Feedback - TF-IDF + Cosine Similarity
 
 The code runs for a long time on my computer.
-It's about 30 minutes :(
+It costs more than 30 minutes :(
