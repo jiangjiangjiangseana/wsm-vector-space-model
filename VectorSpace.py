@@ -69,6 +69,7 @@ class VectorSpace:
         wordList = self.parser.removeStopWords(wordList)        
         documentString = " ".join(wordList)
         blob = tb(documentString)
+        
         ### tf weighting
         for word in wordList:
             if weighting == 'tf':
@@ -121,11 +122,21 @@ class VectorSpace:
         return ratings
 
 
+    def split_batch(self,init_list, batch_size):
+        groups = zip(*(iter(init_list),) * batch_size)
+        end_list = [list(i) for i in groups]
+        count = len(init_list) % batch_size
+        end_list.append(init_list[-count:]) if count != 0 else end_list
+        return end_list
+
     def getRelevenceVector(self, wordString):
         wordList = self.parser.tokenise(wordString)
         wordList = self.parser.removeStopWords(wordList)
-        pos_result = nltk.pos_tag(wordList)
         feedbackWord = []
+        # init_batch_size = 5
+        # batch_result = self.split_batch(wordList, init_batch_size)
+        # for subWordList in batch_result:
+        pos_result = nltk.pos_tag(wordList)
         for word in pos_result:
             if word[1] == 'VB' or 'NN':
                 feedbackWord.append(word[0])

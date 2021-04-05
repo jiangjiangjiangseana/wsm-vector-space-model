@@ -1,4 +1,5 @@
 import os
+import gc
 import argparse
 import tfidf
 import numpy as np
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     engNewsList = load_files_in_dir()
     documents = read_documents(engNewsList)
     vectorSpace_tf = VectorSpace(documents)
-    vectorSpace_tfidf = VectorSpace(documents, weighting='tfidf')
+    
 
 
     #1-1
@@ -57,33 +58,36 @@ if __name__ == '__main__':
     top_10_tf_cos = dict(list(sorted_ratings_1.items())[:10])
     result(top_10_tf_cos)
 
-    #1-2
-    print('')
-    print('1-2')
-    print('-------------------------------------')
-    print('Term Frequency Weighting + Euclidean Distance')
-    sorted_ratings_2 = vectorSpace_tf.search(queryList, formula="euclidean")
-    top_10_tf_dis = dict(list(sorted_ratings_2.items())[:10])
-    result(top_10_tf_dis)
-    print("top1cos:", list(sorted_ratings_1.items())[0])
+    # #1-2
+    # print('')
+    # print('1-2')
+    # print('-------------------------------------')
+    # print('Term Frequency Weighting + Euclidean Distance')
+    # sorted_ratings_2 = vectorSpace_tf.search(queryList, formula="euclidean")
+    # top_10_tf_dis = dict(list(sorted_ratings_2.items())[:10])
+    # result(top_10_tf_dis)
 
-    #1-3
-    print('')
-    print('1-3')
-    print('-------------------------------------')
-    print('TF-IDF Weighting + Cosine Similarity')
-    sorted_ratings_3 = vectorSpace_tfidf.search(queryList, weighting="tfidf")
-    top_10_tfidf_cos = dict(list(sorted_ratings_3.items())[:10])
-    result(top_10_tfidf_cos)
 
-    #1-4
-    print('')
-    print('1-4')
-    print('-------------------------------------')
-    print('TF-IDF Weighting + Euclidean Distance')
-    sorted_ratings_4 = vectorSpace_tfidf.search(queryList, formula="euclidean", weighting="tfidf")
-    top_10_tfidf_dis = dict(list(sorted_ratings_4.items())[:10])
-    result(top_10_tfidf_dis)
+   
+    # vectorSpace_tfidf = VectorSpace(documents, weighting='tfidf')
+
+    # #1-3
+    # print('')
+    # print('1-3')
+    # print('-------------------------------------')
+    # print('TF-IDF Weighting + Cosine Similarity')
+    # sorted_ratings_3 = vectorSpace_tfidf.search(queryList, weighting="tfidf")
+    # top_10_tfidf_cos = dict(list(sorted_ratings_3.items())[:10])
+    # result(top_10_tfidf_cos)
+
+    # #1-4
+    # print('')
+    # print('1-4')
+    # print('-------------------------------------')
+    # print('TF-IDF Weighting + Euclidean Distance')
+    # sorted_ratings_4 = vectorSpace_tfidf.search(queryList, formula="euclidean", weighting="tfidf")
+    # top_10_tfidf_dis = dict(list(sorted_ratings_4.items())[:10])
+    # result(top_10_tfidf_dis)
 
 
     #2
@@ -91,11 +95,11 @@ if __name__ == '__main__':
     print('2')
     print('-------------------------------------')
     print('Relevence Feedback - TF-IDF + Cosine Similarity')
-    top_tfidf_cos_idx = list(sorted_ratings_3.items())[0][0]
+    top_tfidf_cos_idx = list(sorted_ratings_1.items())[0][0]
     top_doc = documents[top_tfidf_cos_idx]
-    feedbackVector = vectorSpace_tfidf.getRelevenceVector(top_doc)
-    queryVector = vectorSpace_tfidf.buildQueryVector(queryList, weighting="tfidf")
+    feedbackVector = vectorSpace_tf.getRelevenceVector(top_doc)
+    queryVector = vectorSpace_tf.buildQueryVector(queryList, weighting="tfidf")
     rf_query_vector = list(1 * np.array(queryVector) + 0.5 * np.array(feedbackVector))
-    sorted_ratings_5 = vectorSpace_tfidf.relevence_search(rf_query_vector, weighting='tfidf')
+    sorted_ratings_5 = vectorSpace_tf.relevence_search(rf_query_vector, weighting='tfidf')
     relevence_ratings = dict(list(sorted_ratings_5.items())[:10])
     result(relevence_ratings)
